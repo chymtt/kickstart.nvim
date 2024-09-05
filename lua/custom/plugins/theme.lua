@@ -1,19 +1,26 @@
 return {
   {
-    'fcancelinha/nordern.nvim',
-    branch = 'master',
+    'AlexvZyl/nordic.nvim',
     priority = 1000,
     init = function()
-      vim.cmd.colorscheme 'nordern'
-    end,
-    config = function()
-      require('nordern').setup {
-        transparent = false, -- turns the background transparent.
-        brighter_comments = true, -- changes the shade of comments to be brighter and easier to read.
-        italic_comments = true, -- italicizes the comments.
-      }
+      vim.cmd.colorscheme 'nordic'
     end,
   },
+  -- {
+  --   'fcancelinha/nordern.nvim',
+  --   branch = 'master',
+  --   priority = 1000,
+  --   init = function()
+  --     vim.cmd.colorscheme 'nordern'
+  --   end,
+  --   config = function()
+  --     require('nordern').setup {
+  --       transparent = false, -- turns the background transparent.
+  --       brighter_comments = true, -- changes the shade of comments to be brighter and easier to read.
+  --       italic_comments = true, -- italicizes the comments.
+  --     }
+  --   end,
+  -- },
 
   -- {
   --   'sainnhe/gruvbox-material',
