@@ -15,5 +15,26 @@ return { -- Collection of various small independent plugins/modules
     -- - sd'   - [S]urround [D]elete [']quotes
     -- - sr)'  - [S]urround [R]eplace [)] [']
     require('mini.surround').setup()
+
+    -- Extend jumping with [ and ]
+    require('mini.bracketed').setup {
+      buffer = { suffix = 'b', options = {} },
+      comment = { suffix = 'c', options = {} },
+      conflict = { suffix = 'x', options = {} },
+      diagnostic = { suffix = 'd', options = {} },
+      file = { suffix = '', options = {} },
+      indent = { suffix = '', options = {} },
+      jump = { suffix = '', options = {} },
+      location = { suffix = '', options = {} },
+      oldfile = { suffix = '', options = {} },
+      quickfix = { suffix = 'q', options = {} },
+      treesitter = { suffix = 't', options = {} },
+      undo = { suffix = 'u', options = {} },
+      window = { suffix = '', options = {} },
+      yank = { suffix = '', options = {} },
+    }
+
+    -- Highlight the word under the cursor
+    require('mini.cursorword').setup()
   end,
 }
