@@ -15,7 +15,7 @@ return {
     'derektata/lorem.nvim',
     config = function()
       local lorem = require 'lorem'
-      lorem.setup {
+      lorem.opts {
         sentenceLength = 'mixedShort',
         comma = 1,
       }
