@@ -13,10 +13,28 @@ return {
     },
   },
   {
-    'julienvincent/hunk.nvim',
-    cmd = { 'DiffEditor' },
-    config = function()
-      require('hunk').setup()
-    end,
+    'NeogitOrg/neogit',
+    dependencies = {
+      'nvim-lua/plenary.nvim', -- required
+      { -- optional - Diff integration
+        'sindrets/diffview.nvim',
+        config = function()
+          local actions = require('diffview.config').actions
+          require('diffview').setup {
+            view = {
+              merge_tool = {
+                layout = 'diff3_mixed',
+              },
+            },
+          }
+        end,
+      },
+
+      -- Only one of these is needed.
+      'nvim-telescope/telescope.nvim', -- optional
+      -- 'ibhagwan/fzf-lua', -- optional
+      -- 'echasnovski/mini.pick', -- optional
+    },
+    config = true,
   },
 }
