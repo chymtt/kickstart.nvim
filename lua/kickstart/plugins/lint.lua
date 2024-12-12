@@ -12,6 +12,21 @@ return {
         typescriptreact = { 'eslint_d' },
       }
 
+      local eslint_d = require('lint').linters.eslint_d
+      eslint_d.args = {
+        -- Add this flag until eslint got upgraded to v10 so it can be used in monorepo
+        -- https://eslint.org/docs/latest/use/configure/configuration-files#experimental-configuration-file-resolution
+        '--flag',
+        'unstable_config_lookup_from_file',
+        '--format',
+        'json',
+        '--stdin',
+        '--stdin-filename',
+        function()
+          return vim.api.nvim_buf_get_name(0)
+        end,
+      }
+
       -- Create autocommand which carries out the actual linting
       -- on the specified events.
       local lint_augroup = vim.api.nvim_create_augroup('lint', { clear = true })
