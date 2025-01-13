@@ -27,16 +27,16 @@ return {
       autocmd = { enable = true },
     },
   },
-  {
-    'm4xshen/hardtime.nvim',
-    dependencies = { 'MunifTanjim/nui.nvim', 'nvim-lua/plenary.nvim' },
-    opts = {
-      disabled_keys = {
-        ['<Up>'] = { '', 'i' },
-        ['<Down>'] = { '', 'i' },
-        ['<Left>'] = {},
-        ['<Right>'] = {},
-      },
-    },
-  },
+  -- {
+  --   'm4xshen/hardtime.nvim',
+  --   dependencies = { 'MunifTanjim/nui.nvim', 'nvim-lua/plenary.nvim' },
+  --   opts = {
+  --     disabled_keys = {
+  --       ['<Up>'] = { '', 'i' },
+  --       ['<Down>'] = { '', 'i' },
+  --       ['<Left>'] = {},
+  --       ['<Right>'] = {},
+  --     },
+  --   },
+  -- },
 }
