@@ -124,7 +124,22 @@ return {
       -- A list of functions, each representing a global custom command
       -- that will be available in all sources (if not overridden in `opts[source_name].commands`)
       -- see `:h neo-tree-custom-commands-global`
-      commands = {},
+      commands = {
+        find_files_folder = function(state)
+          local node = state.tree:get_node()
+          require('telescope.builtin').find_files {
+            cwd = node.path,
+            prompt_title = 'Find Files in Folder ' .. node.name,
+          }
+        end,
+        grep_folder = function(state)
+          local node = state.tree:get_node()
+          require('telescope.builtin').live_grep {
+            cwd = node.path,
+            prompt_title = 'Live Grep in Folder ' .. node.name,
+          }
+        end,
+      },
       window = {
         position = 'left',
         width = 40,
@@ -176,6 +191,10 @@ return {
           ['<'] = 'prev_source',
           ['>'] = 'next_source',
           ['i'] = 'show_file_details',
+
+          -- custom commands
+          ['<C-f>'] = 'find_files_folder',
+          ['<C-g>'] = 'grep_folder',
         },
       },
       filesystem = {
