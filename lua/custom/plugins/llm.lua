@@ -19,6 +19,7 @@ return {
       -- add any opts here
       -- for example
       provider = 'claude',
+      auto_suggestions_provider = 'claude',
       providers = {
         claude = {
           endpoint = 'https://api.anthropic.com',
@@ -30,6 +31,19 @@ return {
             max_tokens = 20480,
           },
         },
+      },
+      file_selector = {
+        provider = 'telescope',
+        -- Options override for custom providers
+        provider_opts = {},
+      },
+      selector = {
+        provider = 'telescope',
+        provider_opts = {},
+        exclude_auto_select = {}, -- List of items to exclude from auto selection
+      },
+      input = {
+        provider = 'snacks',
       },
     },
     dependencies = {
@@ -64,37 +78,17 @@ return {
         ft = { 'markdown', 'Avante' },
       },
     },
-    --- @class AvanteFileSelectorConfig
-    file_selector = {
-      provider = 'telescope',
-      -- Options override for custom providers
-      provider_opts = {},
-    },
-    selector = {
-      ---@type avante.SelectorProvider
-      provider = 'telescope',
-      provider_opts = {},
-      exclude_auto_select = {}, -- List of items to exclude from auto selection
-    },
-    input = {
-      provider = 'snacks',
-      provider_opts = {
-        -- Additional snacks.input options
-        title = 'Avante Input',
-        icon = ' ',
-      },
-    },
   },
-  -- {
-  --   'supermaven-inc/supermaven-nvim',
-  --   config = function()
-  --     require('supermaven-nvim').setup {
-  --       keymaps = {
-  --         accept_suggestion = '<C-u>',
-  --         clear_suggestion = '<C-]>',
-  --         accept_word = '<C-j>',
-  --       },
-  --     }
-  --   end,
-  -- },
+  {
+    'supermaven-inc/supermaven-nvim',
+    config = function()
+      require('supermaven-nvim').setup {
+        keymaps = {
+          accept_suggestion = '<C-u>',
+          clear_suggestion = '<C-]>',
+          accept_word = '<C-i>',
+        },
+      }
+    end,
+  },
 }
