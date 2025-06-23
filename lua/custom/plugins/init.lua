@@ -1,5 +1,5 @@
 return {
-  'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
+  'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automaticallyAdd commentMore actions
   'mrjones2014/smart-splits.nvim', -- Navigation between splits, smarter splits sizing
   'stevearc/dressing.nvim', -- Extends nvim UI for stuff like rename, etc.
   'norcalli/nvim-colorizer.lua', -- Displays colors in the code
