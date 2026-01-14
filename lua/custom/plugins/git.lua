@@ -19,7 +19,6 @@ return {
       { -- optional - Diff integration
         'sindrets/diffview.nvim',
         config = function()
-          local actions = require('diffview.config').actions
           require('diffview').setup {
             view = {
               merge_tool = {
@@ -35,6 +34,17 @@ return {
       -- 'ibhagwan/fzf-lua', -- optional
       -- 'echasnovski/mini.pick', -- optional
     },
-    config = true,
+    config = function()
+      local neogit = require 'neogit'
+
+      neogit.setup {}
+
+      vim.keymap.set('n', '<leader>gg', function()
+        neogit.open { kind = 'floating' }
+      end, { desc = 'Open Neogit UI floating' })
+      vim.keymap.set('n', '<leader>gG', function()
+        neogit.open { kind = 'auto' }
+      end, { desc = 'Open Neogit UI split' })
+    end,
   },
 }
