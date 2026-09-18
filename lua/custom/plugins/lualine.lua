@@ -4,7 +4,7 @@ return {
   config = function()
     require('lualine').setup {
       options = {
-        theme = 'nordic',
+        theme = 'dracula',
         telescope = { style = 'classic' },
       },
     }

@@ -1,27 +1,27 @@
 return {
-  {
-    'iamcco/markdown-preview.nvim',
-    event = 'VeryLazy',
-    cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
-    build = 'cd app && yarn install',
-    init = function()
-      vim.g.mkdp_filetypes = { 'markdown' }
-      vim.cmd 'let g:mkdp_auto_start = 0'
-      vim.cmd 'let g:mkdp_refresh_slow = 0'
-      vim.cmd "let g:mkdp_theme= 'light'"
-    end,
-    ft = { 'markdown' },
-  },
-
-  {
-    'preservim/vim-markdown',
-    dependencies = 'godlygeek/tabular',
-
-    config = function()
-      vim.cmd 'let g:vim_markdown_folding_disabled = 1'
-      vim.cmd 'let g:vim_markdown_folding_style_pythonic = 1'
-    end,
-  },
+  -- {
+  --   'iamcco/markdown-preview.nvim',
+  --   event = 'VeryLazy',
+  --   cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
+  --   build = 'cd app && yarn install',
+  --   init = function()
+  --     vim.g.mkdp_filetypes = { 'markdown' }
+  --     vim.cmd 'let g:mkdp_auto_start = 0'
+  --     vim.cmd 'let g:mkdp_refresh_slow = 0'
+  --     vim.cmd "let g:mkdp_theme= 'light'"
+  --   end,
+  --   ft = { 'markdown' },
+  -- },
+  --
+  -- {
+  --   'preservim/vim-markdown',
+  --   dependencies = 'godlygeek/tabular',
+  --
+  --   config = function()
+  --     vim.cmd 'let g:vim_markdown_folding_disabled = 1'
+  --     vim.cmd 'let g:vim_markdown_folding_style_pythonic = 1'
+  --   end,
+  -- },
 
   --- Image preview in neovim
   -- {
@@ -52,4 +52,34 @@ return {
   --     }
   --   end,
   -- },
+  {
+    'OXY2DEV/markview.nvim',
+    lazy = false,
+    config = function()
+      local presets = require 'markview.presets'
+
+      require('markview').setup {
+        preview = {
+          icon_provider = 'devicons', -- "mini" or "devicons" or "internal"
+        },
+        markdown = {
+          enable = true,
+          headings = presets.headings.glow,
+          horizontal_rules = presets.horizontal_rules.dotted,
+          tables = presets.tables.single,
+          block_quotes = presets.block_quotes.obsidian,
+        },
+      }
+
+      -- markview only regenerates its MarkviewPalette*/MarkviewHeading* highlight
+      -- groups on VimEnter/ColorScheme. The colorscheme (nordic, priority 1000)
+      -- is applied before markview loads, so those events are missed and the
+      -- highlight groups stay undefined -- the presets then render with no color.
+      -- Generate them once here against the already-active colorscheme.
+      require('markview.highlights').setup()
+    end,
+
+    -- Completion for `blink.cmp`
+    -- dependencies = { "saghen/blink.cmp" },
+  },
 }

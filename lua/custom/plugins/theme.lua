@@ -1,11 +1,11 @@
 return {
-  {
-    'AlexvZyl/nordic.nvim',
-    priority = 1000,
-    init = function()
-      vim.cmd.colorscheme 'nordic'
-    end,
-  },
+  -- {
+  --   'AlexvZyl/nordic.nvim',
+  --   priority = 1000,
+  --   init = function()
+  --     vim.cmd.colorscheme 'nordic'
+  --   end,
+  -- },
   -- {
   --   'fcancelinha/nordern.nvim',
   --   branch = 'master',
@@ -41,34 +41,34 @@ return {
   --   end,
   -- },
 
-  -- {
-  --   'catppuccin/nvim',
-  --   name = 'catppuccin',
-  --   priority = 1000,
-  --   init = function()
-  --     vim.cmd.colorscheme 'catppuccin-mocha'
-  --   end,
-  --   config = function()
-  --     require('catppuccin').setup {
-  --       integrations = {
-  --         nvimtree = false,
-  --         cmp = true,
-  --         neotree = true,
-  --         treesitter = true,
-  --         fidget = true,
-  --         gitgutter = true,
-  --         mini = {
-  --           enabled = true,
-  --           indentscope_color = '',
-  --         },
-  --         navic = {
-  --           enabled = true,
-  --           custom_bg = 'NONE', -- "lualine" will set background to mantle
-  --         },
-  --         window_picker = true,
-  --         which_key = true,
-  --       },
-  --     }
-  --   end,
-  -- },
+  {
+    'catppuccin/nvim',
+    name = 'catppuccin',
+    priority = 1000,
+    init = function()
+      vim.cmd.colorscheme 'catppuccin-macchiato'
+    end,
+    config = function()
+      require('catppuccin').setup {
+        integrations = {
+          nvimtree = false,
+          cmp = true,
+          neotree = true,
+          treesitter = true,
+          fidget = true,
+          gitgutter = true,
+          mini = {
+            enabled = true,
+            indentscope_color = '',
+          },
+          navic = {
+            enabled = true,
+            custom_bg = 'NONE', -- "lualine" will set background to mantle
+          },
+          window_picker = true,
+          which_key = true,
+        },
+      }
+    end,
+  },
 }

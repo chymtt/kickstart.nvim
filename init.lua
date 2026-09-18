@@ -271,15 +271,41 @@ require('lazy').setup({
 
       -- [[ Configure Telescope ]]
       -- See `:help telescope` and `:help telescope.setup()`
+      local telescopeActions = require 'telescope.actions'
+      local telescopeActionState = require 'telescope.actions.state'
+
+      -- Open the selected entry, then re-assert the cursor position on a later
+      -- tick. Telescope schedules the jump to the matched line, but on freshly
+      -- loaded files a treesitter/LSP redraw can clobber it and leave you at the
+      -- top of the file. Setting the cursor again in vim.schedule wins the race.
+      local function selectAndJump(promptBufnr)
+        local selectedEntry = telescopeActionState.get_selected_entry()
+        telescopeActions.select_default(promptBufnr)
+        if selectedEntry and selectedEntry.lnum then
+          vim.schedule(function()
+            pcall(vim.api.nvim_win_set_cursor, 0, { selectedEntry.lnum, (selectedEntry.col or 1) - 1 })
+            vim.cmd 'normal! zz'
+          end)
+        end
+      end
+
       require('telescope').setup {
         -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
-        --
-        -- defaults = {
-        --   mappings = {
-        --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-        --   },
-        -- },
+        defaults = {
+          mappings = {
+            i = {
+              ['<Tab>'] = require('telescope.actions').move_selection_previous,
+              ['<S-Tab>'] = require('telescope.actions').move_selection_next,
+              ['<CR>'] = selectAndJump,
+            },
+            n = {
+              ['<Tab>'] = require('telescope.actions').move_selection_previous,
+              ['<S-Tab>'] = require('telescope.actions').move_selection_next,
+              ['<CR>'] = selectAndJump,
+            },
+          },
+        },
         -- pickers = {}
         extensions = {
           ['ui-select'] = {
@@ -608,6 +634,11 @@ require('lazy').setup({
           end,
         },
       }
+
+      vim.lsp.config('dartls', {
+        cmd = { 'fvm', 'dart', 'language-server', '--protocol=lsp' },
+      })
+      vim.lsp.enable 'dartls'
     end,
   },
 
