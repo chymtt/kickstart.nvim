@@ -781,100 +781,122 @@ require('lazy').setup({
   },
 
   { -- Highlight, edit, and navigate code
+    -- Uses the `main` branch: the `master` branch is frozen and does not support Neovim 0.12.
+    -- Requires the `tree-sitter` CLI (`brew install tree-sitter-cli`) to build parsers.
     'nvim-treesitter/nvim-treesitter',
+    branch = 'main',
+    lazy = false,
     dependencies = {
-      'nvim-treesitter/nvim-treesitter-textobjects',
+      { 'nvim-treesitter/nvim-treesitter-textobjects', branch = 'main' },
       'JoosepAlviste/nvim-ts-context-commentstring',
     },
     build = ':TSUpdate',
     config = function()
       -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
-
-      ---@diagnostic disable-next-line: missing-fields
-      require('nvim-treesitter.configs').setup {
-        ensure_installed = {
-          'c',
-          'cpp',
-          'go',
-          'lua',
-          'python',
-          'rust',
-          'tsx',
-          'javascript',
-          'typescript',
-          'vimdoc',
-          'vim',
-          'bash',
-          'toml',
-          'svelte',
-          'go',
-          'markdown_inline',
-          'query',
-        },
-        -- Autoinstall languages that are not installed
-        auto_install = true,
-        highlight = {
-          enable = true,
-          -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
-          --  If you are experiencing weird indenting issues, add the language to
-          --  the list of additional_vim_regex_highlighting and disabled languages for indent.
-          additional_vim_regex_highlighting = { 'ruby' },
-        },
-        indent = { enable = true, disable = { 'ruby' } },
-        incremental_selection = {
-          enable = true,
-          keymaps = {
-            init_selection = '<c-space>',
-            node_incremental = '<c-space>',
-            scope_incremental = '<c-s>',
-            node_decremental = '<M-space>',
-          },
-        },
-        textobjects = {
-          select = {
-            enable = true,
-            lookahead = true, -- Automatically jump forward to textobj, similar to targets.vim
-            keymaps = {
-              -- You can use the capture groups defined in textobjects.scm
-              ['aa'] = '@parameter.outer',
-              ['ia'] = '@parameter.inner',
-              ['af'] = '@function.outer',
-              ['if'] = '@function.inner',
-              ['ac'] = '@class.outer',
-              ['ic'] = '@class.inner',
-            },
-          },
-          move = {
-            enable = true,
-            set_jumps = true, -- whether to set jumps in the jumplist
-            goto_next_start = {
-              [']m'] = '@function.outer',
-              [']]'] = '@class.outer',
-            },
-            goto_next_end = {
-              [']M'] = '@function.outer',
-              [']['] = '@class.outer',
-            },
-            goto_previous_start = {
-              ['[m'] = '@function.outer',
-              ['[['] = '@class.outer',
-            },
-            goto_previous_end = {
-              ['[M'] = '@function.outer',
-              ['[]'] = '@class.outer',
-            },
-          },
-          swap = {
-            enable = true,
-            swap_next = {
-              ['<leader>a'] = '@parameter.inner',
-            },
-            swap_previous = {
-              ['<leader>A'] = '@parameter.inner',
-            },
-          },
-        },
+      local treesitter = require 'nvim-treesitter'
+      treesitter.install {
+        'bash',
+        'c',
+        'cpp',
+        'go',
+        'javascript',
+        'lua',
+        'markdown',
+        'markdown_inline',
+        'python',
+        'query',
+        'rust',
+        'svelte',
+        'toml',
+        'tsx',
+        'typescript',
+        'vim',
+        'vimdoc',
       }
+
+      -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
+      local regex_highlight_filetypes = { ruby = true }
+      local indent_disabled_filetypes = { ruby = true }
+      local available_languages = treesitter.get_available()
+
+      vim.api.nvim_create_autocmd('FileType', {
+        group = vim.api.nvim_create_augroup('kickstart-treesitter', { clear = true }),
+        callback = function(event)
+          local filetype = event.match
+          local language = vim.treesitter.language.get_lang(filetype)
+          if not language then
+            return
+          end
+
+          local function enable_treesitter()
+            if not vim.api.nvim_buf_is_valid(event.buf) or not pcall(vim.treesitter.start, event.buf, language) then
+              return
+            end
+            if regex_highlight_filetypes[filetype] then
+              vim.bo[event.buf].syntax = 'on'
+            end
+            if not indent_disabled_filetypes[filetype] then
+              vim.bo[event.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+            end
+          end
+
+          if vim.list_contains(treesitter.get_installed(), language) then
+            enable_treesitter()
+          elseif vim.list_contains(available_languages, language) then
+            -- Autoinstall languages that are not installed
+            treesitter.install(language):await(function()
+              vim.schedule(enable_treesitter)
+            end)
+          end
+        end,
+      })
+
+      -- Incremental selection uses Neovim's built-in treesitter node selection (`:help v_an`)
+      vim.keymap.set('n', '<c-space>', 'van', { remap = true, desc = 'Start treesitter selection' })
+      vim.keymap.set('x', '<c-space>', 'an', { remap = true, desc = 'Expand treesitter selection' })
+      vim.keymap.set('x', '<M-space>', 'in', { remap = true, desc = 'Shrink treesitter selection' })
+
+      -- [[ Configure Treesitter textobjects ]] See `:help nvim-treesitter-textobjects`
+      require('nvim-treesitter-textobjects').setup {
+        select = { lookahead = true }, -- Automatically jump forward to textobj, similar to targets.vim
+        move = { set_jumps = true }, -- whether to set jumps in the jumplist
+      }
+
+      local textobject_select = require 'nvim-treesitter-textobjects.select'
+      for keymap, capture in pairs {
+        ['aa'] = '@parameter.outer',
+        ['ia'] = '@parameter.inner',
+        ['af'] = '@function.outer',
+        ['if'] = '@function.inner',
+        ['ac'] = '@class.outer',
+        ['ic'] = '@class.inner',
+      } do
+        vim.keymap.set({ 'x', 'o' }, keymap, function()
+          textobject_select.select_textobject(capture, 'textobjects')
+        end, { desc = 'Select ' .. capture })
+      end
+
+      local textobject_move = require 'nvim-treesitter-textobjects.move'
+      for move_function, keymaps in pairs {
+        goto_next_start = { [']m'] = '@function.outer', [']]'] = '@class.outer' },
+        goto_next_end = { [']M'] = '@function.outer', [']['] = '@class.outer' },
+        goto_previous_start = { ['[m'] = '@function.outer', ['[['] = '@class.outer' },
+        goto_previous_end = { ['[M'] = '@function.outer', ['[]'] = '@class.outer' },
+      } do
+        for keymap, capture in pairs(keymaps) do
+          vim.keymap.set({ 'n', 'x', 'o' }, keymap, function()
+            textobject_move[move_function](capture, 'textobjects')
+          end, { desc = move_function .. ' ' .. capture })
+        end
+      end
+
+      local textobject_swap = require 'nvim-treesitter-textobjects.swap'
+      vim.keymap.set('n', '<leader>a', function()
+        textobject_swap.swap_next '@parameter.inner'
+      end, { desc = 'Swap with next parameter' })
+      vim.keymap.set('n', '<leader>A', function()
+        textobject_swap.swap_previous '@parameter.inner'
+      end, { desc = 'Swap with previous parameter' })
     end,
   },
 
